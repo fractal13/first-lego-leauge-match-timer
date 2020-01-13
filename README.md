@@ -17,11 +17,12 @@ the operator may do so.
 
 # Controls
 
-* `a` - Start the pregame 1:00 countdown
-* `b` - Reset the clock to pregame status
-* `p` - Early terminate the countdown, reset the clock to pregame status
+* `a` - Start the pregame 1:00 countdown.
+* `b` - Reset the clock to pregame status.
+* `p` - Early terminate the countdown, reset the clock to pregame status.
 * `t` - Toggle test mode.  In test mode, pregame is 5 seconds, game
   is 10 seconds, and end game starts with 3 seconds left.
+* `esc` - Exit the program.
 
 # Source
 
