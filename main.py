@@ -54,6 +54,10 @@ class PygameApp( game.Game ):
             self.mGame.actOnPressP( )
         if pygame.K_t in newkeys:
             self.mGame.actOnPressT( )
+        if pygame.K_UP in newkeys:
+            self.mGame.actOnPressUp( )
+        if pygame.K_DOWN in newkeys:
+            self.mGame.actOnPressDown( )
 
         self.mGame.evolve( dt )
 

@@ -19,6 +19,10 @@ class Timer:
     TEST_MATCH_TIME    = 10
     TEST_ENDMATCH_TIME = 3
 
+    MAIN_CLOCK_SIZE    = 0.70 # fraction of screen height
+    WALL_CLOCK_SIZE    = 0.15 # fraction of screen height
+    ROUND_SIZE         = 0.15 # fraction of screen height
+
     def __init__( self, width, height ):
         # Define length of game periods
         self.mSetupTime   = Timer.FULL_SETUP_TIME
@@ -29,13 +33,24 @@ class Timer:
         self.mWidth = width
         self.mHeight = height
         
-        # Font selection and clock placement
-        self.mText = text.Text( "0:00", self.mWidth / 2, self.mHeight / 2 )
-        self.mText.setFont( "latinmodernromancaps", 600 )
-
         # Wall-clock
-        self.mWallClock = text.Text( "0:00", self.mWidth - 275, self.mHeight -100 )
-        self.mWallClock.setFont( "latinmodernromancaps", 120 )
+        wall_size = int(self.mHeight * Timer.WALL_CLOCK_SIZE)
+        self.mWallClock = text.Text( "0:00 AM", int(0.95*self.mWidth), self.mHeight - wall_size )
+        self.mWallClock.setFont( "latinmodernromancaps", wall_size )
+        self.mWallClock.alignRight()
+
+        # Round Number
+        self.mRoundNumber = 0
+        round_size = int(self.mHeight * Timer.ROUND_SIZE)
+        self.mRoundNumberText = text.Text( "Round: 0", int(0.05*self.mWidth), self.mHeight - round_size )
+        self.mRoundNumberText.setFont( "latinmodernromancaps", round_size )
+        self.mRoundNumberText.alignLeft()
+
+        # Font selection and clock placement
+        size = int(self.mHeight * Timer.MAIN_CLOCK_SIZE)
+        y    = int(0.50*self.mHeight) - int(max(wall_size,round_size))
+        self.mText = text.Text( "0:00", int(0.50*self.mWidth), y )
+        self.mText.setFont( "latinmodernromancaps", size )
 
         # Color selection
         self.mSetupBackground = ( 255, 255, 0 )  # yellow
@@ -48,6 +63,7 @@ class Timer:
 
         self.mText.setColor( self.mSetupColor )
         self.mWallClock.setColor( self.mSetupColor )
+        self.mRoundNumberText.setColor( self.mSetupColor )
         self.reset( )
         self.setText( )
 
@@ -73,6 +89,11 @@ class Timer:
         
         
         self.mWallClock.setText( time.strftime("%I:%M %p",time.localtime()) )
+        if self.mRoundNumber > 0:
+            s = "Round: %d" % (self.mRoundNumber,)
+        else:
+            s = "Round: 0"
+        self.mRoundNumberText.setText(s)
 
         if False:
             # Tried to display 1/10 of seconds, but removed for now.
@@ -113,6 +134,7 @@ class Timer:
     # back to beginning of pregame, only if countdown has finished
     def actOnPressB( self ):
         if self.mCounting == Timer.MATCH_OVER:
+            self.mRoundNumber += 1
             self.reset( )
         return
 
@@ -135,6 +157,20 @@ class Timer:
         if self.mCounting == Timer.SETUP_COUNTING or self.mCounting == Timer.MATCH_COUNTING:
             self.mStopSound.play()
             self.reset( )
+        return
+
+    # increase round number
+    def actOnPressUp( self ):
+        if self.mCounting == Timer.NOT_COUNTING:
+            self.mRoundNumber += 1
+        return
+
+    # decrease round number
+    def actOnPressDown( self ):
+        if self.mCounting == Timer.NOT_COUNTING:
+            self.mRoundNumber -= 1
+            if self.mRoundNumber < 0:
+                self.mRoundNumber = 0
         return
 
     # update all status based on time change (dt)
@@ -172,5 +208,6 @@ class Timer:
 
         self.mText.draw( surface )
         self.mWallClock.draw( surface )
+        self.mRoundNumberText.draw( surface )
 
         return
